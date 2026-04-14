@@ -20,6 +20,10 @@
   <a href="https://playwright.dev">
     <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" width="160" />
   </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.typescriptlang.org">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" width="45" />
+  </a>
 </p>
 
 <p align="center">
@@ -29,7 +33,7 @@
   &nbsp;&nbsp;·&nbsp;&nbsp;
   <a href="https://playwright.dev/docs/test-agents"><strong>Test Agents</strong></a>
   &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://claude.ai/claude-code"><strong>Claude Code</strong></a>
+  <a href="https://claude.ai/claude-code"><img src="https://img.shields.io/badge/Claude_Code-AI_Accelerated-cc785c?style=flat-square&logo=anthropic&logoColor=white" alt="Claude Code" /></a>
 </p>
 
 <!-- Badges -->
