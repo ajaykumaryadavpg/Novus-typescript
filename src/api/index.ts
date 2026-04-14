@@ -11,4 +11,4 @@ export * from "./configs";
 export * from "./utils";
 
 // API Test Base
-export { apiTest, withApiTestMeta } from "./novus-api-test-base";
+export { apiTest, withApiTestMeta, step as apiStep } from "./novus-api-test-base";

@@ -5,12 +5,20 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit",
     "test": "npx playwright test",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
     "test:ui": "npx playwright test --ui",
-    "lint": "eslint src/ tests/"
+    "report": "npx playwright show-report tests/resources/reports",
+    "typecheck": "tsc --noEmit",
+    "setup": "npx playwright install --with-deps",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "tsc --noEmit --skipLibCheck"
+    ]
   },
   "keywords": [
     "playwright",
@@ -28,6 +36,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.4.0"
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "typescript": "^5.9.3"
   }
 }

@@ -1,0 +1,27 @@
+## Say you want to perform some actions if and only if a locator is present
+
+* The user will perform
+* actions1 actions2 and actions3
+* only when the locator is present/visible on UI
+* else it will ignore
+
+```typescript
+await actor.attemptsTo(
+  Perform.actions(actions1, actions2, actions3)
+    .iff(locator)
+    .isPresent()
+    .log("conditionalAction", "perform actions if locator present")
+);
+```
+
+## Say you want to perform an action only if the locator is visible
+
+* The user will
+* click on locator
+* if the locator is visible on the UI
+* else it will ignore the Click action on the locator
+
+```typescript
+await actor.attemptsTo(Click.on(locator).ifDisplayed());
+await actor.attemptsTo(Enter.text("abc").on(locator).ifDisplayed());
+```

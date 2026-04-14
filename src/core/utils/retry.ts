@@ -1,24 +1,35 @@
-import { logger } from "../services/novus-logger.service";
+import { NovusLoggerService } from "../services/novus-logger.service";
+
+const log = NovusLoggerService.init("Retry");
 
 /**
  * Retry — retry logic utility with fluent API.
- * Equivalent to Java Retry class.
+ * Equivalent to Java Retry class — ALL options included.
  */
 export class Retry {
-  private actionFn!: () => Promise<void>;
+  private actionFn!: () => Promise<void> | void;
+  private otherwiseFn?: () => Promise<void> | void;
+  private meanwhileFn?: () => Promise<void> | void;
+  private retryException: boolean = false;
   private retryCount: number = 1;
   private ignoredErrors: (new (...args: any[]) => Error)[] = [];
-  private meanwhileFn?: () => Promise<void>;
-  private otherwiseFn?: () => Promise<void>;
 
-  static action(fn: () => Promise<void>): Retry {
-    const retry = new Retry();
-    retry.actionFn = fn;
-    return retry;
+  private constructor(action: () => Promise<void> | void) {
+    this.actionFn = action;
   }
 
-  times(count: number): Retry {
-    this.retryCount = count;
+  static action(fn: () => Promise<void> | void): Retry {
+    return new Retry(fn);
+  }
+
+  times(numberOfRetries: number): Retry {
+    this.retryCount = numberOfRetries;
+    return this;
+  }
+
+  /** Keep retrying even on success until exception — equivalent to Java untilExceptionEncountered() */
+  untilExceptionEncountered(): Retry {
+    this.retryException = true;
     return this;
   }
 
@@ -27,45 +38,52 @@ export class Retry {
     return this;
   }
 
-  meanwhilePerform(fn: () => Promise<void>): Retry {
+  meanwhilePerform(fn: () => Promise<void> | void): Retry {
     this.meanwhileFn = fn;
     return this;
   }
 
-  otherwisePerform(fn: () => Promise<void>): Retry {
+  otherwisePerform(fn: () => Promise<void> | void): Retry {
     this.otherwiseFn = fn;
     return this;
   }
 
   async run(): Promise<void> {
-    let lastError: Error | undefined;
+    let count = 1;
 
-    for (let i = 0; i < this.retryCount; i++) {
+    for (let i = 1; i <= this.retryCount; i++) {
+      log.info("Retry number {}", i);
       try {
         await this.actionFn();
-        return;
-      } catch (error) {
-        lastError = error as Error;
-        const isIgnored = this.ignoredErrors.some(
-          (errType) => error instanceof errType
-        );
-
-        if (isIgnored || i < this.retryCount - 1) {
-          logger.warning(
-            `Retry attempt ${i + 1}/${this.retryCount} failed: ${lastError.message}`
+        if (!this.retryException) break;
+      } catch (ex) {
+        const error = ex as Error;
+        if (
+          this.ignoredErrors.length > 0 &&
+          this.ignoredErrors.some((errType) => error instanceof errType)
+        ) {
+          log.info(
+            "Encountered exception {} : {}",
+            error.name,
+            error.message
           );
-          if (this.meanwhileFn) {
-            await this.meanwhileFn();
+          if (this.otherwiseFn) {
+            await this.otherwiseFn();
           }
-          continue;
+        } else {
+          log.info(
+            "caught exception [ {} ] was not ignored. Hence retry stopped after {} retries",
+            error.name,
+            i
+          );
+          break;
         }
       }
+      if (this.meanwhileFn) {
+        await this.meanwhileFn();
+      }
+      count = i;
     }
-
-    if (this.otherwiseFn) {
-      await this.otherwiseFn();
-    } else if (lastError) {
-      throw lastError;
-    }
+    log.info("Retry Action was complete after {} retries", count);
   }
 }

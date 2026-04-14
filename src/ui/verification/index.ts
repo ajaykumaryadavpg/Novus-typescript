@@ -6,4 +6,4 @@ export {
   VerifyPage,
   VerifyUrl,
 } from "./verify";
-export { SoftlyVerify, SoftVerifyChain } from "./softly-verify";
+export { NovusSoftAssert, SoftlyVerify, SoftVerifyChain } from "./softly-verify";

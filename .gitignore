@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.env
+
+# Playwright
+test-results/
+playwright-report/
+tests/resources/screenshots/
+tests/resources/reports/
+
+# Generated per-repo (by npx playwright init-agents)
+.mcp.json
+.claude/agents/
+.claude/settings.local.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.tsbuildinfo

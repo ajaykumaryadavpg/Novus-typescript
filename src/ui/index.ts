@@ -11,4 +11,4 @@ export * from "./locatorstrategy";
 export * from "./verification";
 
 // GUI Test Base
-export { test, expect, withTestMeta } from "./novus-gui-test-base";
+export { test, expect, withTestMeta, step } from "./novus-gui-test-base";

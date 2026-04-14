@@ -1,26 +1,30 @@
 import type { Actor, Waiter } from "../../core/interfaces";
-import { logger } from "../../core/services/novus-logger.service";
+import { NovusLoggerService } from "../../core/services/novus-logger.service";
+
+const log = NovusLoggerService.init("Waiting");
 
 /**
  * Waiting — wait for elements/conditions.
- * Equivalent to Java Waiting class implementing Waiter.
+ * Equivalent to Java Waiting class implementing Waiter — ALL options included.
  */
 export class Waiting implements Waiter {
-  private selector: string = "";
-  private timeoutSeconds: number = 30;
-  private nthIndex?: number;
-  private state: "visible" | "hidden" | "attached" | "detached" = "visible";
+  private locator: string;
+  private timeOut: number = 30;
+  private nthIndex: number = 0;
+  private _state?: "visible" | "hidden" | "attached" | "detached";
+  private _elementState?: string;
+  private _within?: number;
 
-  private constructor() {}
-
-  static on(selector: string): Waiting {
-    const w = new Waiting();
-    w.selector = selector;
-    return w;
+  private constructor(locator: string) {
+    this.locator = locator;
   }
 
-  seconds(timeout: number): Waiting {
-    this.timeoutSeconds = timeout;
+  static on(locator: string): Waiting {
+    return new Waiting(locator);
+  }
+
+  seconds(timeOut: number): Waiting {
+    this.timeOut = timeOut;
     return this;
   }
 
@@ -29,38 +33,60 @@ export class Waiting implements Waiter {
     return this;
   }
 
+  /** Set wait state — equivalent to Java toBe(WaitForSelectorState) */
   toBe(state: "visible" | "hidden" | "attached" | "detached"): Waiting {
-    this.state = state;
+    this._state = state;
     return this;
   }
 
-  withState(state: "visible" | "hidden" | "attached" | "detached"): Waiting {
-    this.state = state;
+  /** Set element state — equivalent to Java withState(ElementState) */
+  withState(state: string): Waiting {
+    this._elementState = state;
     return this;
   }
 
+  /** Set timeout in seconds — equivalent to Java within(double) */
   within(seconds: number): Waiting {
-    this.timeoutSeconds = seconds;
+    this._within = seconds;
     return this;
   }
 
   async waitAs(actor: Actor): Promise<boolean> {
     const page = actor.usesBrowser();
-    logger.step(
-      `Waiting for '${this.selector}' to be ${this.state} (timeout: ${this.timeoutSeconds}s)`
-    );
-
     try {
-      let locator = page.locator(this.selector);
-      if (this.nthIndex !== undefined) {
-        locator = locator.nth(this.nthIndex);
+      if (!this._state) {
+        // Default: wait for visible
+        log.wait(
+          "Waiting for locator : {} to be visible in {} sec",
+          this.locator,
+          this.timeOut
+        );
+        await page.waitForLoadState();
+        await page
+          .locator(this.locator)
+          .nth(this.nthIndex)
+          .waitFor({
+            state: "visible",
+            timeout: this.timeOut * 1000,
+          });
+      } else {
+        const timeout = this._within
+          ? this._within * 1000
+          : this.timeOut * 1000;
+        log.info(
+          "Waiting on locator : {} to have state : {}",
+          this.locator,
+          this._state
+        );
+        await page.waitForSelector(this.locator, {
+          state: this._state,
+          timeout,
+        });
       }
-      await locator.waitFor({
-        state: this.state,
-        timeout: this.timeoutSeconds * 1000,
-      });
+      log.info("Locator : {} visible on GUI", this.locator);
       return true;
     } catch {
+      log.warning("[Timed Out] waiting for element {}", this.locator);
       return false;
     }
   }

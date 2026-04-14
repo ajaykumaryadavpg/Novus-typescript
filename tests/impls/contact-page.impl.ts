@@ -1,5 +1,6 @@
 import { Enter } from "../../src/ui/actions/enter";
 import { Select } from "../../src/ui/actions/select";
+import { Perform } from "../../src/ui/actions/perform";
 import { ContactPage } from "../pages/contact.page";
 import type { Performable } from "../../src/core/interfaces";
 
@@ -9,36 +10,52 @@ const { LetsTalk } = ContactPage;
 /**
  * ContactPageImpl — contact page action implementations.
  * Equivalent to Java ContactPageImpl class.
- * Form fields are inside an iframe, so we use inFrame().
+ * Each function returns a Performable wrapped in Perform.actions().log() — matching Java exactly.
  */
-export function fillFirstName(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.FIRST_NAME).inFrame(FRAME);
+export function fillFirstName(fName: string): Performable {
+  return Perform.actions(
+    Enter.text(fName).on(LetsTalk.FIRST_NAME).inFrame(FRAME)
+  ).log("fillFirstName", "fills the first name of the client");
 }
 
-export function fillLastName(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.LAST_NAME).inFrame(FRAME);
+export function fillLastName(lName: string): Performable {
+  return Perform.actions(
+    Enter.text(lName).on(LetsTalk.LAST_NAME).inFrame(FRAME)
+  ).log("fillLastName", "fills the last name of the client");
 }
 
-export function fillCompanyName(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.COMPANY_NAME).inFrame(FRAME);
+export function fillCompanyName(cName: string): Performable {
+  return Perform.actions(
+    Enter.text(cName).on(LetsTalk.COMPANY_NAME).inFrame(FRAME)
+  ).log("fillCompanyName", "fills the company name of the client");
 }
 
-export function fillBizEmail(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.BIZ_EMAIL).inFrame(FRAME);
+export function fillBizEmail(bizEmail: string): Performable {
+  return Perform.actions(
+    Enter.text(bizEmail).on(LetsTalk.BIZ_EMAIL).inFrame(FRAME)
+  ).log("fillBizEmail", "fills the biz email of the client");
 }
 
-export function fillBizPhoneNumber(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.BIZ_PHONE).inFrame(FRAME);
+export function fillBizPhoneNumber(phNumber: string): Performable {
+  return Perform.actions(
+    Enter.text(phNumber).on(LetsTalk.BIZ_PHONE).inFrame(FRAME)
+  ).log("fillBizPhoneNumber", "fills the biz phone number of the client");
 }
 
-export function fillJobTitle(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.JOB_TITLE).inFrame(FRAME);
+export function fillJobTitle(jobTitle: string): Performable {
+  return Perform.actions(
+    Enter.text(jobTitle).on(LetsTalk.JOB_TITLE).inFrame(FRAME)
+  ).log("fillJobTitle", "fills the job title of the client");
 }
 
-export function fillClientMessage(value: string): Performable {
-  return Enter.text(value).on(LetsTalk.MESSAGE).inFrame(FRAME);
+export function fillClientMessage(message: string): Performable {
+  return Perform.actions(
+    Enter.text(message).on(LetsTalk.MESSAGE).inFrame(FRAME)
+  ).log("fillClientMessage", "fills the client's message");
 }
 
-export function selectState(value: string): Performable {
-  return Select.option(value).on(LetsTalk.LOCATION_DPDWN).inFrame(FRAME);
+export function selectState(state: string): Performable {
+  return Perform.actions(
+    Select.option(state).on(LetsTalk.LOCATION_DPDWN).inFrame(FRAME)
+  ).log("selectState", "fills the client's state");
 }

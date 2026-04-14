@@ -1,36 +1,48 @@
-import type { Actor, Performable } from "../../core/interfaces";
-import { logger } from "../../core/services/novus-logger.service";
+import type { Actor, Performable, Waiter } from "../../core/interfaces";
+import { NovusLoggerService } from "../../core/services/novus-logger.service";
 import { NovusActionException } from "../../core/exceptions";
+import { Waiting } from "./waiting";
+
+const log = NovusLoggerService.init("Enter");
 
 /**
  * Enter — fill text in an input field.
- * Equivalent to Java Enter class.
+ * Equivalent to Java Enter class — ALL options included.
  */
 export class Enter implements Performable {
-  private value: string | string[] = "";
-  private selector: string = "";
-  private nthIndex?: number;
+  private textToEnter: string;
+  private locator: string = "";
+  private ifLocator: string[] = [];
+  private toBeIgnoredIfNotVisible: boolean = false;
+  private waitConditions: Waiter[] | null = null;
+  private nthIndex: number = -1;
+  private seconds: number = 0;
   private isMulti: boolean = false;
-  private onlyIfDisplayed: boolean = false;
+  private waitTimeForVisibility: number = 5;
   private frameSelector?: string;
 
-  private constructor() {}
-
-  static text(value: string): Enter {
-    const enter = new Enter();
-    enter.value = value;
-    return enter;
+  private constructor(textToEnter: string) {
+    this.textToEnter = textToEnter;
   }
 
-  static multi(values: string[]): Enter {
-    const enter = new Enter();
-    enter.value = values;
-    enter.isMulti = true;
-    return enter;
+  static text(a: string | number): Enter {
+    return new Enter(String(a));
+  }
+
+  /** Wait conditions before entering — equivalent to Java after(Waiter...) */
+  after(...waitConditions: Waiter[]): Enter {
+    this.waitConditions = waitConditions;
+    return this;
   }
 
   on(selector: string): Enter {
-    this.selector = selector;
+    this.locator = selector;
+    return this;
+  }
+
+  /** Fill ALL matching locators — equivalent to Java multi() */
+  multi(): Enter {
+    this.isMulti = true;
     return this;
   }
 
@@ -39,8 +51,16 @@ export class Enter implements Performable {
     return this;
   }
 
-  ifDisplayed(): Enter {
-    this.onlyIfDisplayed = true;
+  ifDisplayed(...locator: string[]): Enter {
+    this.ifLocator = locator;
+    this.toBeIgnoredIfNotVisible = true;
+    return this;
+  }
+
+  ifDisplayedWithWait(waitTime: number, ...locator: string[]): Enter {
+    this.waitTimeForVisibility = waitTime;
+    this.ifLocator = locator;
+    this.toBeIgnoredIfNotVisible = true;
     return this;
   }
 
@@ -49,41 +69,76 @@ export class Enter implements Performable {
     return this;
   }
 
+  byWaitingFor(seconds: number): Enter {
+    this.seconds = seconds;
+    return this;
+  }
+
   async performAs(actor: Actor): Promise<void> {
     const page = actor.usesBrowser();
-    logger.step(
-      `Entering '${Array.isArray(this.value) ? this.value.join(", ") : this.value}' on: ${this.selector}`
-    );
+    if (this.seconds > 0) await actor.isWaitingForSeconds(this.seconds);
 
     try {
-      let locator;
-
-      if (this.frameSelector) {
-        locator = page.frameLocator(this.frameSelector).locator(this.selector);
-      } else {
-        locator = page.locator(this.selector);
-      }
-
-      if (this.nthIndex !== undefined) {
-        locator = locator.nth(this.nthIndex);
-      }
-
-      if (this.onlyIfDisplayed) {
-        const isVisible = await locator.isVisible().catch(() => false);
-        if (!isVisible) return;
-      }
-
-      if (this.isMulti && Array.isArray(this.value)) {
-        for (let i = 0; i < this.value.length; i++) {
-          await page.locator(this.selector).nth(i).fill(this.value[i]);
+      if (this.toBeIgnoredIfNotVisible) {
+        const checkLocator =
+          this.ifLocator.length === 0 ? [this.locator] : this.ifLocator;
+        const waitResult = await actor.is(
+          Waiting.on(checkLocator[0]).seconds(this.waitTimeForVisibility)
+        );
+        const visible =
+          waitResult &&
+          (await page.locator(checkLocator[0]).first().isVisible());
+        if (visible) {
+          await this.enterText(actor);
+        } else {
+          log.warning(
+            `[ENTER TEXT : IGNORED] on locator : <${this.locator}>`
+          );
         }
+      } else if (
+        this.waitConditions === null ||
+        (await actor.is(...this.waitConditions))
+      ) {
+        await this.enterText(actor);
+        log.info(
+          `[Action Performed : ENTER TEXT ] value : ${this.textToEnter} on locator : <${this.locator}>`
+        );
       } else {
-        await locator.fill(this.value as string);
+        log.error(
+          "[Action Failure : ENTER TEXT ] Could not enter text on : " +
+            this.locator,
+          new Error("Timed out while waiting for locator to load")
+        );
       }
     } catch (error) {
+      log.truncatedError((error as Error).message);
       throw new NovusActionException(
-        `Failed to enter text on '${this.selector}': ${(error as Error).message}`
+        "Text could not be entered on locator " + this.locator
       );
+    }
+  }
+
+  private async enterText(actor: Actor): Promise<void> {
+    const page = actor.usesBrowser();
+    // Wait for locator to be visible first
+    await Waiting.on(this.locator).waitAs(actor);
+
+    let baseLocator;
+    if (this.frameSelector) {
+      baseLocator = page.frameLocator(this.frameSelector).locator(this.locator);
+    } else {
+      baseLocator = page.locator(this.locator);
+    }
+
+    if (this.isMulti) {
+      const count = await baseLocator.count();
+      for (let i = 0; i < count; i++) {
+        await baseLocator.nth(i).fill(this.textToEnter);
+      }
+    } else if (this.nthIndex >= 0) {
+      await baseLocator.nth(this.nthIndex).fill(this.textToEnter);
+    } else {
+      await baseLocator.first().fill(this.textToEnter);
     }
   }
 }

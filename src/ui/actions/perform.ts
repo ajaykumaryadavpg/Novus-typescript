@@ -1,97 +1,139 @@
 import type { Actor, Performable } from "../../core/interfaces";
-import { logger } from "../../core/services/novus-logger.service";
+import { NovusLoggerService } from "../../core/services/novus-logger.service";
+import { NovusConfigException } from "../../core/exceptions";
+import { Waiting } from "./waiting";
+import { Retry } from "../../core/utils/retry";
+
+const log = NovusLoggerService.init("Perform");
 
 /**
  * Perform — composite action orchestrator with conditional execution.
- * Equivalent to Java Perform class.
+ * Equivalent to Java Perform class — ALL options included.
  */
 export class Perform implements Performable {
-  private actionList: Performable[] = [];
-  private conditionalFn?: (actor: Actor) => Promise<boolean>;
-  private logMessage?: string;
-  private repeatCount: number = 1;
-  private onExceptionActions?: Performable[];
-  private thenActions?: Performable[];
-  private meanwhileActions?: Performable[];
+  private taskList: Performable[];
+  private logMessage: string = "";
+  private callingMethod: string = "";
+  private wait: number = 0;
+  private meanwhileAction?: () => Promise<void>;
+  private otherwiseActions: Performable[] | null = null;
+  private count: number = 0;
+  private exceptionTypes: (new (...args: any[]) => Error)[] = [];
+  private ifLocator: string | null = null;
 
-  private constructor() {}
-
-  static actions(...actions: Performable[]): Perform {
-    const perform = new Perform();
-    perform.actionList = actions;
-    return perform;
+  private constructor(tasks: Performable[]) {
+    this.taskList = tasks;
   }
 
-  iff(condition: (actor: Actor) => Promise<boolean>): Perform {
-    this.conditionalFn = condition;
+  static actions(...tasks: Performable[]): Perform {
+    return new Perform(tasks);
+  }
+
+  /** Conditional execution — equivalent to Java iff(String) */
+  iff(locator: string): Perform {
+    this.ifLocator = locator;
     return this;
   }
 
-  log(message: string): Perform {
-    this.logMessage = message;
+  isPresent(): Perform {
+    return this;
+  }
+
+  /**
+   * Log message — equivalent to Java log(String callingMethod, String log).
+   * Two-param signature matching Java exactly.
+   */
+  log(callingMethod: string, logMessage: string): Perform {
+    this.callingMethod = callingMethod;
+    this.logMessage = logMessage;
     return this;
   }
 
   twice(): Perform {
-    this.repeatCount = 2;
+    this.count = 2;
     return this;
   }
 
   thrice(): Perform {
-    this.repeatCount = 3;
+    this.count = 3;
     return this;
   }
 
   times(count: number): Perform {
-    this.repeatCount = count;
+    this.count = count;
     return this;
   }
 
-  ifExceptionOccurs(...actions: Performable[]): Perform {
-    this.onExceptionActions = actions;
+  /** Exception types to catch — equivalent to Java ifExceptionOccurs(Class<? extends Throwable>...) */
+  ifExceptionOccurs(
+    ...exceptionTypes: (new (...args: any[]) => Error)[]
+  ): Perform {
+    this.exceptionTypes = exceptionTypes;
     return this;
   }
 
+  /** Actions to run after retries or on exception — equivalent to Java then(Performable...) */
   then(...actions: Performable[]): Perform {
-    this.thenActions = actions;
+    this.otherwiseActions = actions;
     return this;
   }
 
-  meanwhile(...actions: Performable[]): Perform {
-    this.meanwhileActions = actions;
+  /** Meanwhile action — equivalent to Java meanwhile(Runnable) */
+  meanwhile(action: () => Promise<void>): Perform {
+    this.meanwhileAction = action;
+    return this;
+  }
+
+  byWaitingFor(seconds: number): Perform {
+    this.wait = seconds;
     return this;
   }
 
   async performAs(actor: Actor): Promise<void> {
-    if (this.logMessage) {
-      logger.step(this.logMessage);
+    if (this.wait > 0) {
+      await actor.isWaitingForSeconds(this.wait);
     }
 
-    if (this.conditionalFn) {
-      const shouldProceed = await this.conditionalFn(actor);
-      if (!shouldProceed) return;
+    if (!this.logMessage) {
+      throw new NovusConfigException(
+        'please add a log after calling the "actions" method'
+      );
     }
 
-    for (let i = 0; i < this.repeatCount; i++) {
-      try {
-        for (const action of this.actionList) {
-          await action.performAs(actor);
+    log.step(
+      `[ method : ${this.callingMethod} ] - ${this.logMessage}`
+    );
+
+    // Conditional check
+    if (
+      this.ifLocator === null ||
+      (await actor.is(Waiting.on(this.ifLocator).seconds(10)))
+    ) {
+      if (this.count === 0) {
+        await actor.attemptsTo(...this.taskList);
+      } else {
+        const retry = Retry.action(async () => {
+          await actor.attemptsTo(...this.taskList);
+        })
+          .times(this.count)
+          .ignoring(...this.exceptionTypes);
+
+        if (this.otherwiseActions) {
+          retry.otherwisePerform(async () => {
+            await actor.attemptsTo(...this.otherwiseActions!);
+          });
         }
-      } catch (error) {
-        if (this.onExceptionActions) {
-          for (const action of this.onExceptionActions) {
-            await action.performAs(actor);
-          }
-          return;
-        }
-        throw error;
-      }
-    }
 
-    if (this.thenActions) {
-      for (const action of this.thenActions) {
-        await action.performAs(actor);
+        if (this.meanwhileAction) {
+          retry.meanwhilePerform(this.meanwhileAction);
+        }
+
+        await retry.run();
       }
+    } else {
+      log.warning(
+        `Condition check failed for locator : ${this.ifLocator} so subsequent actions were not performed`
+      );
     }
   }
 }

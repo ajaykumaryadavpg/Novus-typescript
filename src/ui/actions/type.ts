@@ -1,44 +1,88 @@
-import type { Actor, Performable } from "../../core/interfaces";
-import { logger } from "../../core/services/novus-logger.service";
+import type { Actor, Performable, Waiter } from "../../core/interfaces";
+import { NovusLoggerService } from "../../core/services/novus-logger.service";
 import { NovusActionException } from "../../core/exceptions";
+
+const log = NovusLoggerService.init("Type");
 
 /**
  * Type — type text character by character with optional delay.
- * Equivalent to Java Type class.
+ * Equivalent to Java Type class — ALL options included.
  */
 export class Type implements Performable {
-  private value: string = "";
-  private selector: string = "";
-  private delay: number = 0;
+  private textToType: string;
+  private locator: string = "";
+  private waitConditions: Waiter[] | null = null;
+  private seconds: number = 0;
+  private slowSearch: boolean = false;
 
-  private constructor() {}
-
-  static text(value: string): Type {
-    const type = new Type();
-    type.value = value;
-    return type;
+  private constructor(textToType: string) {
+    this.textToType = textToType;
   }
 
-  on(selector: string): Type {
-    this.selector = selector;
+  static text(a: string): Type {
+    return new Type(a);
+  }
+
+  /** Wait conditions — equivalent to Java afterWaiting(Waiting...) */
+  afterWaiting(...waitConditions: Waiter[]): Type {
+    this.waitConditions = waitConditions;
     return this;
   }
 
-  withDelay(ms: number): Type {
-    this.delay = ms;
+  on(selector: string): Type {
+    this.locator = selector;
+    return this;
+  }
+
+  /** Slow type with delay — equivalent to Java withDelay() */
+  withDelay(): Type {
+    this.slowSearch = true;
+    return this;
+  }
+
+  byWaitingFor(seconds: number): Type {
+    this.seconds = seconds;
     return this;
   }
 
   async performAs(actor: Actor): Promise<void> {
-    logger.step(`Typing '${this.value}' on: ${this.selector}`);
+    const page = actor.usesBrowser();
+    if (this.seconds > 0) {
+      await actor.isWaitingForSeconds(this.seconds);
+    }
     try {
-      await actor
-        .usesBrowser()
-        .locator(this.selector)
-        .pressSequentially(this.value, { delay: this.delay });
+      if (
+        this.waitConditions === null ||
+        (await actor.is(...this.waitConditions))
+      ) {
+        if (this.slowSearch) {
+          // Type all but last char with delay, wait, then type last char
+          const lastLetter = this.textToType.substring(this.textToType.length - 1);
+          const strToEnter = this.textToType.substring(0, this.textToType.length - 1);
+          await page
+            .locator(this.locator)
+            .pressSequentially(strToEnter, { delay: 20 });
+          await actor.isWaitingForSeconds(1.5);
+          await page.locator(this.locator).pressSequentially(lastLetter);
+        } else {
+          await page
+            .locator(this.locator)
+            .pressSequentially(this.textToType, { delay: 0.7 });
+        }
+        log.info(
+          `[Action Performed : TYPE TEXT ] on locator : <${this.locator}>`
+        );
+      } else {
+        log.error(
+          "[Action Failure : TYPE TEXT ] Could not type text on : " +
+            this.locator,
+          new Error("timed out while waiting for locator to load")
+        );
+      }
     } catch (error) {
+      log.truncatedError((error as Error).message);
       throw new NovusActionException(
-        `Failed to type on '${this.selector}': ${(error as Error).message}`
+        "Type action failed on locator : " + this.locator
       );
     }
   }

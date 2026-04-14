@@ -1,7 +1,9 @@
 import type { APIRequestContext } from "@playwright/test";
 import { ApiCore } from "./api-core";
-import { logger } from "../../core/services/novus-logger.service";
+import { NovusLoggerService } from "../../core/services/novus-logger.service";
 import { NovusApiException } from "../../core/exceptions";
+
+const log = NovusLoggerService.init("Delete");
 
 /**
  * Delete — HTTP DELETE request.
@@ -21,11 +23,12 @@ export class Delete extends ApiCore<Delete> {
 
   async execute(): Promise<Delete> {
     const url = this.buildUrl();
-    logger.step(`DELETE ${url}`);
+    log.info("Executing DELETE on " + url);
     try {
-      this._response = await this.apiContext.delete(url, {
+      this.apiResponse = await this.apiContext.delete(url, {
         headers: this._headers,
       });
+      log.debug(await this.apiResponse.text());
       return this;
     } catch (error) {
       throw new NovusApiException(

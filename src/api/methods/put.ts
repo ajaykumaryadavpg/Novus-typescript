@@ -1,7 +1,9 @@
 import type { APIRequestContext } from "@playwright/test";
 import { ApiCore } from "./api-core";
-import { logger } from "../../core/services/novus-logger.service";
+import { NovusLoggerService } from "../../core/services/novus-logger.service";
 import { NovusApiException } from "../../core/exceptions";
+
+const log = NovusLoggerService.init("Put");
 
 /**
  * Put — HTTP PUT request.
@@ -21,13 +23,15 @@ export class Put extends ApiCore<Put> {
 
   async execute(): Promise<Put> {
     const url = this.buildUrl();
-    logger.step(`PUT ${url}`);
+    log.info("Executing PUT on " + url);
     try {
-      this._response = await this.apiContext.put(url, {
+      this.apiResponse = await this.apiContext.put(url, {
         headers: this._headers,
         data: this._body,
         form: this._formData,
+        multipart: this._multipartData as any,
       });
+      log.debug(await this.apiResponse.text());
       return this;
     } catch (error) {
       throw new NovusApiException(
