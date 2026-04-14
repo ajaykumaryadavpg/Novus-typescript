@@ -1,0 +1,33 @@
+{
+  "name": "novus",
+  "version": "1.0.0",
+  "description": "Novus - A Test Automation Framework built on Playwright + TypeScript with a fluent DSL",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "lint": "eslint src/ tests/"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "test-automation",
+    "novus",
+    "dsl",
+    "fluent-api"
+  ],
+  "author": "3Pillar Global",
+  "license": "MIT",
+  "dependencies": {
+    "@faker-js/faker": "^9.0.0",
+    "@playwright/test": "^1.44.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}
