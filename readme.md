@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/🔥_NOVUS-Test_Automation_Framework-blue?style=for-the-badge&labelColor=1a1a2e&color=e94560">
-    <img alt="Novus" src="https://img.shields.io/badge/🔥_NOVUS-Test_Automation_Framework-blue?style=for-the-badge&labelColor=1a1a2e&color=e94560">
-  </picture>
+  <img src="https://img.shields.io/badge/🔥_NOVUS-Test_Automation_Framework-blue?style=for-the-badge&labelColor=1a1a2e&color=e94560" alt="Novus" />
 </p>
 
 <p align="center">
@@ -14,18 +11,38 @@
   using a <strong>fluent DSL</strong> that reads like plain English.
 </p>
 
+<!-- Powered by -->
+<p align="center">
+  <sub>POWERED BY</sub>
+</p>
+
+<p align="center">
+  <a href="https://playwright.dev">
+    <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" width="160" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://playwright.dev"><strong>Playwright</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://www.typescriptlang.org"><strong>TypeScript</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://playwright.dev/docs/test-agents"><strong>Test Agents</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://claude.ai/claude-code"><strong>Claude Code</strong></a>
+</p>
+
+<!-- Badges -->
 <p align="center">
   <img src="https://img.shields.io/badge/Playwright-1.44+-45ba63?style=flat-square&logo=playwright" alt="Playwright" />
   <img src="https://img.shields.io/badge/TypeScript-5.4+-3178c6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/Playwright_Test_Agents-Planner_|_Generator_|_Healer-blueviolet?style=flat-square" alt="Test Agents" />
+  <img src="https://img.shields.io/badge/Claude_Code-AI_Accelerated-ff6b35?style=flat-square" alt="Claude Code" />
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/🎭_Playwright_Test_Agents-Planner_|_Generator_|_Healer-blueviolet?style=flat-square" alt="Test Agents" />
-  <img src="https://img.shields.io/badge/🤖_Claude_Code-AI_Accelerated-ff6b35?style=flat-square" alt="Claude Code" />
-</p>
-
+<!-- Quick links -->
 <p align="center">
   <a href="https://playwright.dev/docs/test-agents"><strong>Playwright Test Agents</strong></a> &bull;
   <a href="https://github.com/3PillarGlobal/novus"><strong>Java Novus (Original)</strong></a> &bull;
