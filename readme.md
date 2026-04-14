@@ -1,22 +1,74 @@
 <p align="center">
-  <h1 align="center">Project Novus</h1>
-  <p align="center"><strong>Modern Test Automation Framework</strong></p>
-  <p align="center">Playwright &bull; TypeScript &bull; Screenplay Pattern &bull; Fluent DSL</p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/🔥_NOVUS-Test_Automation_Framework-blue?style=for-the-badge&labelColor=1a1a2e&color=e94560">
+    <img alt="Novus" src="https://img.shields.io/badge/🔥_NOVUS-Test_Automation_Framework-blue?style=for-the-badge&labelColor=1a1a2e&color=e94560">
+  </picture>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Playwright-1.44+-45ba63?logo=playwright" alt="Playwright" />
-  <img src="https://img.shields.io/badge/TypeScript-5.4+-3178c6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License" />
-  <img src="https://img.shields.io/badge/Agents-Playwright_Test_Agents-blueviolet" alt="Test Agents" />
+  <strong><em>Novus is a latin word that means new, fresh, young and extraordinary.</em></strong>
+</p>
+
+<p align="center">
+  Write <strong>super stable</strong>, <strong>high quality</strong> automated acceptance tests<br/>
+  using a <strong>fluent DSL</strong> that reads like plain English.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Playwright-1.44+-45ba63?style=flat-square&logo=playwright" alt="Playwright" />
+  <img src="https://img.shields.io/badge/TypeScript-5.4+-3178c6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/🎭_Playwright_Test_Agents-Planner_|_Generator_|_Healer-blueviolet?style=flat-square" alt="Test Agents" />
+  <img src="https://img.shields.io/badge/🤖_Claude_Code-AI_Accelerated-ff6b35?style=flat-square" alt="Claude Code" />
+</p>
+
+<p align="center">
+  <a href="https://playwright.dev/docs/test-agents"><strong>Playwright Test Agents</strong></a> &bull;
+  <a href="https://github.com/3PillarGlobal/novus"><strong>Java Novus (Original)</strong></a> &bull;
+  <a href="#-qa-workflow--how-you-use-this"><strong>QA Workflow</strong></a> &bull;
+  <a href="#-getting-started"><strong>Get Started</strong></a>
 </p>
 
 ---
 
-**_Novus is a latin word that means new, fresh, young and extraordinary._**
+<table>
+<tr>
+<td width="50%">
 
-Novus is a multi-module TypeScript-based **Test Automation Framework** for writing automated acceptance UI, API, and Hybrid test scenarios. It is the TypeScript edition of the [Java Novus](https://github.com/3PillarGlobal/novus) — same architecture, same DSL, same patterns — powered by [Playwright Test Agents](https://playwright.dev/docs/test-agents) for AI-accelerated test development.
+### The Novus Style
+
+```typescript
+await actor.attemptsTo(
+  Launch.app(on(urlService.getAppUrl())),
+  Navigate.to().contactPage(),
+  fillFirstName("Test"),
+  fillLastName("User"),
+  fillCompanyName("Test Company"),
+  fillBizEmail("client@abc.com"),
+  selectState("Alabama"),
+  fillClientMessage("Hi, I'd like to learn more")
+);
+```
+
+</td>
+<td width="50%">
+
+### What Makes It Different
+
+🎯 **Fluent DSL** — tests read like plain English<br/>
+🧱 **Screenplay Pattern** — layered, maintainable architecture<br/>
+🎭 **Playwright Agents** — AI plans, generates, and heals tests<br/>
+🤖 **Claude Code Ready** — `/novus-test-planner` from Jira/GitHub issues<br/>
+🔄 **Java Novus Parity** — exact same patterns, now in TypeScript<br/>
+📊 **Built-in Reporting** — screenshots, traces, category summaries
+
+</td>
+</tr>
+</table>
 
 ---
 
