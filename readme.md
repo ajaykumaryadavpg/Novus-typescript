@@ -1,57 +1,58 @@
+<h1 align="center">
+  🔥 NOVUS
+</h1>
+
 <p align="center">
-  <img src="https://img.shields.io/badge/🔥_NOVUS-Test_Automation_Framework-blue?style=for-the-badge&labelColor=1a1a2e&color=e94560" alt="Novus" />
+  <strong>Modern Test Automation Framework</strong><br/>
+  <sub>Write super stable, high quality automated acceptance tests using a fluent DSL that reads like plain English.</sub>
 </p>
 
 <p align="center">
-  <strong><em>Novus is a latin word that means new, fresh, young and extraordinary.</em></strong>
+  <em>Novus is a latin word that means new, fresh, young and extraordinary.</em>
 </p>
 
-<p align="center">
-  Write <strong>super stable</strong>, <strong>high quality</strong> automated acceptance tests<br/>
-  using a <strong>fluent DSL</strong> that reads like plain English.
-</p>
+<!-- Powered by — logos aligned via table -->
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center" width="200">
+      <a href="https://playwright.dev">
+        <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" height="50" />
+      </a>
+      <br/><sub><strong>Playwright</strong></sub>
+    </td>
+    <td align="center" width="100">
+      <a href="https://www.typescriptlang.org">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" height="50" />
+      </a>
+      <br/><sub><strong>TypeScript</strong></sub>
+    </td>
+    <td align="center" width="200">
+      <a href="https://playwright.dev/docs/test-agents">
+        <img src="https://img.shields.io/badge/🎭_Test_Agents-Planner_|_Generator_|_Healer-blueviolet?style=for-the-badge" alt="Test Agents" />
+      </a>
+    </td>
+    <td align="center" width="200">
+      <a href="https://claude.ai/claude-code">
+        <img src="https://img.shields.io/badge/🤖_Claude_Code-AI_Accelerated-cc785c?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Code" />
+      </a>
+    </td>
+  </tr>
+</table>
 
-<!-- Powered by -->
-<p align="center">
-  <sub>POWERED BY</sub>
-</p>
-
-<p align="center">
-  <a href="https://playwright.dev">
-    <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" width="160" />
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.typescriptlang.org">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" width="45" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://playwright.dev"><strong>Playwright</strong></a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://www.typescriptlang.org"><strong>TypeScript</strong></a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://playwright.dev/docs/test-agents"><strong>Test Agents</strong></a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://claude.ai/claude-code"><img src="https://img.shields.io/badge/Claude_Code-AI_Accelerated-cc785c?style=flat-square&logo=anthropic&logoColor=white" alt="Claude Code" /></a>
-</p>
-
-<!-- Badges -->
+<!-- Version badges -->
 <p align="center">
   <img src="https://img.shields.io/badge/Playwright-1.44+-45ba63?style=flat-square&logo=playwright" alt="Playwright" />
   <img src="https://img.shields.io/badge/TypeScript-5.4+-3178c6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License" />
-  <img src="https://img.shields.io/badge/Playwright_Test_Agents-Planner_|_Generator_|_Healer-blueviolet?style=flat-square" alt="Test Agents" />
-  <img src="https://img.shields.io/badge/Claude_Code-AI_Accelerated-ff6b35?style=flat-square" alt="Claude Code" />
 </p>
 
 <!-- Quick links -->
 <p align="center">
-  <a href="https://playwright.dev/docs/test-agents"><strong>Playwright Test Agents</strong></a> &bull;
-  <a href="https://github.com/3PillarGlobal/novus"><strong>Java Novus (Original)</strong></a> &bull;
   <a href="#-qa-workflow--how-you-use-this"><strong>QA Workflow</strong></a> &bull;
-  <a href="#-getting-started"><strong>Get Started</strong></a>
+  <a href="#-getting-started"><strong>Get Started</strong></a> &bull;
+  <a href="#-ai-accelerated-testing"><strong>AI Testing</strong></a> &bull;
+  <a href="https://github.com/3PillarGlobal/novus"><strong>Java Novus (Original)</strong></a>
 </p>
 
 ---
